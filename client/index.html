@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>TaskFlow</title>
+  <script>
+    // ── DevTools / inspect protection ──
+
+    // 1. Block keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'S')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // 2. Block right-click
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 3. Detect DevTools via debugger timer (catches docked AND undocked)
+    setInterval(() => {
+      const start = performance.now();
+      debugger;
+      const elapsed = performance.now() - start;
+      if (elapsed > 100) {
+        document.title = '🤨 TaskFlow';
+        document.body.innerHTML = '';
+        document.body.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#94a3b8;font-size:18px;text-align:center;padding:20px';
+        document.body.innerHTML = '<div><h1 style="color:#ef4444;font-size:28px;margin-bottom:10px">Developer Tools Detected</h1><p>Please close DevTools to continue using TaskFlow.</p></div>';
+      }
+    }, 500);
+
+    // 4. Detect docked DevTools via dimension difference (backup)
+    setInterval(() => {
+      const threshold = 160;
+      if (window.outerWidth - window.innerWidth > threshold ||
+          window.outerHeight - window.innerHeight > threshold) {
+        document.title = '🤨 TaskFlow';
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#94a3b8;font-size:18px;text-align:center;padding:20px"><div><h1 style="color:#ef4444;font-size:28px;margin-bottom:10px">Developer Tools Detected</h1><p>Please close DevTools to continue.</p></div></div>';
+      }
+    }, 1000);
+
+    // 5. Override console to make debugging harder
+    const noop = () => {};
+    const methods = ['log', 'info', 'warn', 'error', 'debug', 'table', 'dir', 'trace'];
+    methods.forEach((m) => { console[m] = noop; });
+  </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
