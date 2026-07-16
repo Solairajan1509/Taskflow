@@ -446,6 +446,24 @@ const getMe = async (req, res, next) => {
   }
 };
 
+// @desc    Update profile name
+// @route   PUT /api/auth/profile
+// @access  Private
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) {
+      res.status(400);
+      throw new Error('Name is required');
+    }
+    req.user.name = name.trim();
+    await req.user.save();
+    res.json(req.user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Create initial admin account (seed)
 // @route   POST /api/auth/create-admin
 // @access  Public (only works once if no admin exists)
@@ -487,6 +505,7 @@ module.exports = {
   googleLogin,
   getAllUsers,
   getMe,
+  updateProfile,
   forgotPasswordSendOtp,
   resetPasswordWithOtp,
   createAdmin,

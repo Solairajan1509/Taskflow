@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, Users, Folder, FolderOpen, Mail, X, Loader, AlertCircle, Sparkles } from 'lucide-react';
+import { Plus, Users, Folder, FolderOpen, Mail, X, Loader, AlertCircle, Sparkles, Paperclip, ChevronDown, ChevronUp } from 'lucide-react';
+import FileUpload from '../../components/FileUpload';
+import { getProjectFiles } from '../../services/fileApi';
 
 const Projects = () => {
   const { user } = useAuth();
@@ -24,6 +26,21 @@ const Projects = () => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteSuccessMessage, setInviteSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [projectFiles, setProjectFiles] = useState({});
+  const [expandedFiles, setExpandedFiles] = useState({});
+
+  const toggleProjectFiles = async (projectId) => {
+    const willExpand = !expandedFiles[projectId];
+    setExpandedFiles((prev) => ({ ...prev, [projectId]: willExpand }));
+    if (willExpand && !projectFiles[projectId]) {
+      try {
+        const data = await getProjectFiles(projectId);
+        setProjectFiles((prev) => ({ ...prev, [projectId]: data }));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   // Fetch projects from MERN backend
   const fetchProjects = async () => {
@@ -239,6 +256,34 @@ const Projects = () => {
                     </div>
                   )}
                 </div>
+
+                  <button onClick={() => toggleProjectFiles(proj._id)}
+                    className="mt-3 w-full flex items-center justify-between text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-semibold py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-all"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Paperclip className="h-3.5 w-3.5" />
+                      Files
+                    </span>
+                    {expandedFiles[proj._id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </button>
+                  {expandedFiles[proj._id] && (
+                    <div className="px-3 pb-2">
+                      <FileUpload
+                        files={projectFiles[proj._id] || []}
+                        setFiles={(updater) => {
+                          setProjectFiles((prev) => ({
+                            ...prev,
+                            [proj._id]: typeof updater === 'function' ? updater(prev[proj._id] || []) : updater,
+                          }));
+                        }}
+                        projectId={proj._id}
+                        userRole={
+                          proj.owner?._id === user?._id ? 'project_leader' :
+                          proj.members?.find((m) => m.user?._id === user?._id)?.role || null
+                        }
+                      />
+                    </div>
+                  )}
 
               </div>
             </div>

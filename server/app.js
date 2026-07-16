@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -33,6 +34,9 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
 // Request parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve locally uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Welcome route
 app.get('/', (req, res) => {

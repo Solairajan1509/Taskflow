@@ -1,94 +1,58 @@
-# TaskFlow — Project Management System
+# TaskFlow — Documentation Index
 
-MERN stack app with real-time collaboration, Kanban boards, team chat, admin panel, and more.
+> Enterprise Project Management System (MERN Stack)
 
-## Quick Start
+## Quick Links
+
+| Document | Description |
+|----------|-------------|
+| [implementation-summary.md](./implementation-summary.md) | Full project architecture, routes, models, tech stack |
+| [auth-readme.md](./auth-readme.md) | Authentication methods, endpoints, middleware, context |
+| [authentication-setup.md](./authentication-setup.md) | Setup guide for Google OAuth, Gmail OTP, JWT config |
+| [client/README.md](./client/README.md) | Client routes, features, and dependencies |
+
+## Getting Started
 
 ```bash
-npm run install-all     # Install all dependencies
-npm run dev             # Start both client & server
+# Install dependencies
+npm run install-all
+
+# Configure environment
+# Edit .env with your credentials (see authentication-setup.md)
+
+# Start development
+npm run dev
 ```
 
-Open `http://localhost:5173`
+## Prerequisites
 
-## App Flow
+- **Node.js** v18+
+- **MongoDB** running on `localhost:27017`
+- **Gmail account** with app password (for OTP emails)
+- **Google Cloud Console project** with OAuth 2.0 Client ID (for Google login)
 
-```
-┌──────────────────┐
-│  Login / Register │  ← Google OAuth, Email+Password, or Email OTP
-└───────┬──────────┘
-        │
-        ▼
-┌──────────────────┐
-│    Dashboard      │  ← Stats, charts, activity
-└───────┬──────────┘
-        │
-        ├──────────────┬──────────────┐
-        ▼              ▼              ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│   Projects    │ │    Tasks     │ │    Admin     │
-│ ├─ Members    │ │ ├─ Comments  │ │ ├─ Stats     │
-│ ├─ Invite     │ │ ├─ Assign    │ │ ├─ Users     │
-│ └─ Roles      │ │ └─ Chat      │ │ └─ Activity  │
-└──────────────┘ └──────┬───────┘ └──────────────┘
-        │               │
-        ▼               ▼
-┌──────────────┐ ┌──────────────┐
-│    Kanban     │ │   Calendar   │
-│  Drag & drop  │ │  Month view  │
-└──────────────┘ └──────────────┘
-        │
-        ▼
-┌──────────────┐
-│     Team      │
-│  └─ Invite    │
-└──────────────┘
-        │
-        ▼
-┌──────────────┐
-│   Settings    │
-└──────────────┘
-```
+## Environment (.env)
 
-## Key Pages
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `PORT` | Yes | Server port (default: 5000) |
+| `MONGO_URI` | Yes | MongoDB connection string |
+| `JWT_SECRET` | Yes | JWT signing secret |
+| `CLIENT_URL` | Yes | Frontend URL for CORS |
+| `CLOUDINARY_*` | No | Cloudinary file storage (falls back to local disk) |
+| `GMAIL_USER` | For OTP | Gmail address for sending OTPs |
+| `GMAIL_APP_PASSWORD` | For OTP | Gmail app password |
+| `VITE_GOOGLE_CLIENT_ID` | For Google auth | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | For Google auth | Google OAuth client secret |
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/login` | Login | Email/password, OTP, or Google |
-| `/register` | Register | Email OTP or Google |
-| `/` | Dashboard | Stats, charts, activity feed |
-| `/projects` | Projects | Create/manage projects, invite |
-| `/tasks` | Tasks | Create, assign, comment, chat |
-| `/kanban` | Kanban | Drag & drop task board |
-| `/calendar` | Calendar | Task calendar view |
-| `/team` | Team | Member list, invite |
-| `/settings` | Settings | User settings |
-| `/admin` | Admin | System stats, user management |
+## Key Features
 
-## Features
-
-- **Auth**: Google OAuth, Email+Password, Email OTP, Password Reset
-- **Theme**: Light / Dark / System toggle on every page
-- **Real-time**: Comments, notifications, chat via socket.io
-- **Search**: Global search across projects, tasks, people
-- **Roles**: Owner, Project Leader, Team Member (project-level)
-- **Admin**: System-level admin role with dashboard, user management, analytics
-- **Notifications**: In-app + email for task assign, status change, project created
-- **Security**: bcrypt, JWT, CORS, role middleware, DevTools protection
-- **Obfuscation**: Production build minifies + obfuscates all code
-- **Mobile**: Auto-scales, touch-friendly, responsive design
-
-## Documentation
-
-| File | Purpose |
-|------|---------|
-| `AUTH_README.md` | Full website guide |
-| `AUTHENTICATION_SETUP.md` | Setup & troubleshooting |
-| `IMPLEMENTATION_SUMMARY.md` | Technical details & endpoints |
-| `client/README.md` | Frontend routes & tech stack |
-
-## Tech Stack
-
-- **Frontend**: React 19, Vite, Tailwind CSS, Chart.js, FullCalendar
-- **Backend**: Node.js, Express, MongoDB, Mongoose, JWT, Socket.io
-- **Auth**: Google OAuth 2.0, bcrypt, OTP email verification
+- **Multi-method auth** — Email/password, OTP, Google OAuth
+- **Role-based access** — Admin, project leader, team member
+- **File management** — Upload, preview, rename, verify, delete
+- **Real-time updates** — Socket.IO for tasks, projects, notifications
+- **Kanban board** — Drag-and-drop task management
+- **Calendar view** — Task scheduling and deadlines
+- **Team chat** — Per-project messaging
+- **Global search** — Projects, tasks, and users
+- **Theme support** — Light, dark, and system mode

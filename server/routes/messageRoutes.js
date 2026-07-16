@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { sendMessage, getProjectMessages } = require('../controllers/messageController');
+const {
+  sendMessage,
+  getProjectMessages,
+} = require('../controllers/messageController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect);

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { CheckSquare, Plus, Calendar, Clock, AlertCircle, RefreshCw, Send, MessageCircle, User, Trash2, X, Loader } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CheckSquare, Plus, Calendar, Clock, AlertCircle, RefreshCw, Send, MessageCircle, User, Trash2, X, Loader, Paperclip } from 'lucide-react';
 import { fetchTasks, createTask } from '../../services/taskApi';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
+import FileUpload from '../../components/FileUpload';
+import { getTaskFiles } from '../../services/fileApi';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -22,6 +24,7 @@ const Tasks = () => {
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [taskFiles, setTaskFiles] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({ project: '', title: '', description: '', priority: 'Medium', dueDate: '', duration: '', assignedTo: '' });
   const [projectMembers, setProjectMembers] = useState([]);
@@ -89,9 +92,19 @@ const Tasks = () => {
     }
   };
 
+  const loadTaskFiles = async (taskId) => {
+    try {
+      const data = await getTaskFiles(taskId);
+      setTaskFiles(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const openTask = (task) => {
     setSelectedTask(task);
     loadComments(task._id);
+    loadTaskFiles(task._id);
   };
 
   const handleCommentSubmit = async (e) => {
@@ -282,6 +295,24 @@ const Tasks = () => {
 
                   {selectedTask?._id === task._id && (
                     <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                      <div className="mb-4">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+                          <Paperclip className="h-3.5 w-3.5" />
+                          Attachments ({taskFiles.length})
+                        </h4>
+                        <FileUpload files={taskFiles} setFiles={setTaskFiles} taskId={task._id}
+                          userRole={
+                            (() => {
+                              const proj = projects.find((p) => p._id === (task.project?._id || task.project));
+                              if (!proj) return null;
+                              if (proj.owner?._id === user?._id) return 'project_leader';
+                              const m = proj.members?.find((m) => m.user?._id === user?._id);
+                              return m?.role || null;
+                            })()
+                          }
+                        />
+                      </div>
+                      <div className="border-t border-slate-100 dark:border-slate-700/50 pt-4">
                       <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Comments ({comments.length})</h4>
                       <div className="space-y-3 mb-3 max-h-48 overflow-y-auto">
                         {comments.length === 0 ? (
@@ -322,6 +353,7 @@ const Tasks = () => {
                           <Send className="h-4 w-4" />
                         </button>
                       </form>
+                    </div>
                     </div>
                   )}
                 </div>

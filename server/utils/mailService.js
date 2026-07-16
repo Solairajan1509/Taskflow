@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 // Helper to create transport — tries Gmail → generic SMTP → Ethereal (dev fallback)
 const getTransporter = async () => {
-  // ── 1. Gmail via App Password (recommended for real email delivery) ──────
+  // 1. Gmail via App Password (recommended for real email delivery)
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
     const t = nodemailer.createTransport({
       service: 'gmail',
@@ -17,7 +17,7 @@ const getTransporter = async () => {
     return t;
   }
 
-  // ── 2. Generic SMTP (e.g. SendGrid, Mailgun, custom host) ────────────────
+  // 2. Generic SMTP (e.g. SendGrid, Mailgun, custom host)
   if (
     process.env.SMTP_HOST &&
     process.env.SMTP_PORT &&
@@ -37,7 +37,7 @@ const getTransporter = async () => {
     return t;
   }
 
-  // ── 3. Ethereal (mock — dev only, NOT delivered to real inboxes) ──────────
+  // 3. Ethereal (mock — dev only, NOT delivered to real inboxes)
   try {
     const testAccount = await nodemailer.createTestAccount();
     const t = nodemailer.createTransport({

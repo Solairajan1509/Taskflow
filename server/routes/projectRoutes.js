@@ -8,13 +8,9 @@ const {
 } = require('../controllers/projectController');
 const { protect } = require('../middleware/authMiddleware');
 
-// All project routes are protected
 router.use(protect);
 
-router.route('/')
-  .post(createProject)
-  .get(getProjects);
-
+router.route('/').post(createProject).get(getProjects);
 router.get('/:id', getProjectById);
 router.post('/:id/invite', inviteMember);
 

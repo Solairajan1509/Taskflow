@@ -1,6 +1,6 @@
-# TaskFlow - Client
+# TaskFlow — Client
 
-React + Vite frontend for the TaskFlow project management system.
+React + Vite frontend for the TaskFlow project management system (port 5173).
 
 ## Routes
 
@@ -10,12 +10,12 @@ React + Vite frontend for the TaskFlow project management system.
 | `/register` | Create account with email OTP or Google | Public |
 | `/forgot-password` | Reset password via email OTP | Public |
 | `/` | Dashboard (stats, charts, activity) | Auth required |
-| `/projects` | Manage projects, invite members | Auth required |
-| `/tasks` | View/create tasks, assign members, comments, team chat | Auth required |
+| `/projects` | Manage projects, invite members, view files | Auth required |
+| `/tasks` | View/create tasks, assign members, comments, team chat, file attachments | Auth required |
 | `/kanban` | Drag & drop Kanban board | Auth required |
 | `/calendar` | Calendar view with tasks | Auth required |
 | `/team` | Team members & invite | Auth required |
-| `/settings` | User settings | Auth required |
+| `/settings` | User settings (profile name edit) | Auth required |
 | `/admin` | Admin dashboard (stats, users, activity) | Admin only |
 | `/404` | Not found | Public |
 
@@ -24,6 +24,24 @@ React + Vite frontend for the TaskFlow project management system.
 - **Google OAuth** — one-click sign in (requires `VITE_GOOGLE_CLIENT_ID`)
 - **Email + Password** — standard login
 - **Email OTP** — passwordless login/register via 6-digit code
+
+## File Management
+
+| Feature | Details |
+|---------|---------|
+| Upload | Drag/click to upload, 50MB limit via multer |
+| Preview | Images inline, PDFs in iframe modal |
+| Download | Direct download link |
+| Rename | Inline editing with save/cancel |
+| Verify/Reject | Project leaders approve team member uploads |
+| Status badges | Verified (green), Pending (leader view), Awaiting (member view) |
+| Storage | Cloudinary (primary) / local disk fallback (server/uploads/) |
+
+## Profile
+
+- **Edit name** via Settings page (`/settings`)
+- Changes propagate immediately to sidebar, dashboard, and all UI
+- Server endpoint: `PUT /api/auth/profile` (protected)
 
 ## Global Features
 

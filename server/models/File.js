@@ -29,6 +29,14 @@ const fileSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

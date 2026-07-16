@@ -8,6 +8,7 @@ const {
   verifyLoginOtpAndLogin,
   googleLogin,
   getMe,
+  updateProfile,
   forgotPasswordSendOtp,
   resetPasswordWithOtp,
   createAdmin,
@@ -23,7 +24,7 @@ router.post('/google-login', googleLogin);
 router.post('/forgot-password', forgotPasswordSendOtp);
 router.post('/reset-password', resetPasswordWithOtp);
 router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
 router.post('/create-admin', createAdmin);
 
 module.exports = router;
-

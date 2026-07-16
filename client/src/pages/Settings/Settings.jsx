@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Settings as SettingsIcon, Bell, Shield, Key } from 'lucide-react';
+import api from '../../services/api';
+import toast from 'react-hot-toast';
+import { Loader } from 'lucide-react';
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const [name, setName] = useState(user?.name || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setSaving(true);
+    try {
+      const { data } = await api.put('/auth/profile', { name: name.trim() });
+      setUser(data);
+      toast.success('Profile updated');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -18,13 +37,14 @@ const Settings = () => {
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-6 shadow-sm lg:col-span-2 space-y-6">
           <h3 className="font-bold text-slate-800 dark:text-white text-base">Profile Specifications</h3>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSave}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
                 <input
                   type="text"
-                  defaultValue={user?.name}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-sm outline-none focus:border-emerald-500"
                 />
               </div>
@@ -40,10 +60,12 @@ const Settings = () => {
             </div>
 
             <button
-              type="button"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-5 py-2.5 text-xs font-bold shadow-md shadow-emerald-600/10 transition-colors"
+              type="submit"
+              disabled={saving}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-5 py-2.5 text-xs font-bold shadow-md shadow-emerald-600/10 transition-colors disabled:opacity-60 flex items-center gap-2"
             >
-              Save Parameters
+              {saving && <Loader className="h-4 w-4 animate-spin" />}
+              {saving ? 'Saving...' : 'Save Parameters'}
             </button>
           </form>
         </div>
