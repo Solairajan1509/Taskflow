@@ -45,6 +45,58 @@ npm run dev
 | `VITE_GOOGLE_CLIENT_ID` | For Google auth | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | For Google auth | Google OAuth client secret |
 
+## Site Flow / User Journey
+
+```
+Visitor                               Authenticated User                    Admin
+───────                               ──────────────────                    ─────
+  │                                      │                                   │
+  ├─ /login                             ├─ / (Dashboard)                    ├─ /admin
+  │  ├─ Email+Password ──→ JWT ──→ App  │  ├─ View stats & charts          │  ├─ View all users
+  │  ├─ Email OTP ────────→ JWT ──→ App │  ├─ Recent activity              │  ├─ Activity log
+  │  └─ Google OAuth ────→ JWT ──→ App │  └─ Click through to Projects     │  └─ System stats
+  ├─ /register                          ├─ /projects                        │
+  │  ├─ Email+Password ──→ JWT ──→ App │  ├─ CRUD projects                 │
+  │  ├─ Email OTP ────────→ JWT ──→ App │  ├─ Invite members               │
+  │  └─ Google OAuth ────→ JWT ──→ App │  └─ File Mgmt (Upload/Verify)     │
+  ├─ /forgot-password                   ├─ /tasks                           │
+  │  ├─ Send OTP → Reset → Login       │  ├─ CRUD tasks                    │
+  └─ /404 → back to /login             │  ├─ Comments                      │
+                                       │  ├─ File attachments              │
+                                       │  └─ Team Chat (Socket.IO)         │
+                                       ├─ /kanban (Drag & drop)            │
+                                       ├─ /calendar (Calendar view)        │
+                                       ├─ /team (Members & invites)        │
+                                       └─ /settings (Edit profile name)    │
+                                                                           │
+              ──────────── Global Features ────────────                    │
+              Theme Toggle │ Notifications │ Global Search                  │
+              DevTools Protection │ Responsive Design                      │
+```
+
+### End-to-End Flow
+```
+npm run dev → Client (:5173) + Server (:5000) start
+                  │
+User opens http://localhost:5173
+                  │
+AuthLayout checks token in localStorage
+  ├─ No token → Login/Register/Forgot Password
+  └─ Token exists → GET /api/auth/me
+       ├─ Invalid/expired → Clear token → redirect /login
+       └─ Valid → AuthContext populated → MainLayout renders
+            │
+            React Router checks route:
+            ├─ / → Dashboard (Chart.js stats + activity)
+            ├─ /projects → Project list → CRUD + File Mgmt
+            ├─ /tasks → Task list → Comments + Chat + Files
+            ├─ /kanban → @hello-pangea/dnd board
+            ├─ /calendar → FullCalendar events
+            ├─ /team → Members + Invite
+            ├─ /settings → Edit name → PUT /api/auth/profile
+            └─ /admin → Admin panel (role check)
+```
+
 ## Key Features
 
 - **Multi-method auth** — Email/password, OTP, Google OAuth

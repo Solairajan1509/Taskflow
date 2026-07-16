@@ -52,6 +52,33 @@ React + Vite frontend for the TaskFlow project management system (port 5173).
 - **Responsive** — auto-scales on mobile, tablet, desktop
 - **DevTools Protection** — blocks F12, right-click, Ctrl+Shift+I/J/C, detects DevTools open
 
+## Navigation Flow
+
+```
+[Public]                →  [Auth Guard]           →  [Authenticated App]
+  /login                     PrivateRoute             MainLayout (Sidebar + TopBar)
+  /register                  ├─ No user → /login       ├─ /        Dashboard
+  /forgot-password           └─ Has user → route       ├─ /projects  → File Mgmt
+  /404                                                 ├─ /tasks     → Comments, Chat, Files
+                                                       ├─ /kanban    → Drag & Drop
+AuthLayout                    AuthLayout                ├─ /calendar  → FullCalendar
+  ├─ Logged in → /           ├─ Logged in → /          ├─ /team      → Invite, Roles
+  └─ Not logged in → page    └─ Not logged in → page   ├─ /settings  → Edit Profile
+                                                       └─ /admin     → Admin Only
+```
+
+**Entry Flow:**
+1. User hits any public route → `AuthLayout` redirects to `/` if already logged in
+2. User hits any private route → `PrivateRoute` redirects to `/login` if not authenticated
+3. Auth success → JWT stored → app reload fetches `GET /api/auth/me` → `AuthContext` populated → full access
+
+**Feature Flow:**
+- Dashboard → click chart/stat → navigates to Projects/Tasks
+- Projects → click project → File Management + Invite Members
+- Tasks → click task → Comments + File Attachments + Team Chat
+- Team → invites flow into Projects
+- Settings → profile name edit → propagates everywhere via `setUser()`
+
 ## Tech Stack
 
 - React 19, React Router 7, Vite
